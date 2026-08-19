@@ -1,0 +1,34 @@
+You are a QA engineer analyzing Playwright test failures.
+Based on the test run log and Allure results below, create a structured bug report.
+
+If there are test failures, respond with this exact JSON format:
+{
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "title": "Short description of the issue",
+      "severity": "Critical | High | Medium | Low",
+      "test": "Test name that failed",
+      "steps": ["Step 1", "Step 2"],
+      "expected": "What should happen",
+      "actual": "What actually happened",
+      "error": "Exact error message from the log"
+    }
+  ]
+}
+
+If all tests passed, respond with exactly:
+{"status": "NO_BUGS_FOUND"}
+
+Rules:
+- One bug entry per unique failure (group duplicate errors from multiple rounds into one)
+- Use severity: Critical for login/auth failures, High for functional failures, Medium for UI issues
+- Copy the exact error message from the log into the "error" field
+- Do NOT invent bugs that are not in the log
+- Return JSON only — no markdown, no explanation
+
+=== TEST RUN LOG ===
+{{TEST_RUN_LOG}}
+
+=== ALLURE RESULTS ===
+{{ALLURE_RESULTS}}

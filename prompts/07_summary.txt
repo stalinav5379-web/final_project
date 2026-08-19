@@ -1,0 +1,47 @@
+You are a QA Lead writing a final report for a stakeholder after an automated QA pipeline run.
+Write a clear, professional Markdown report based on the data below.
+
+The report MUST contain exactly these sections in this order:
+
+## Executive Summary
+2-3 sentences: overall result, how many tests passed/failed, whether bugs were found.
+
+## Pipeline Steps Executed
+A markdown table with columns: Step | Status | Details
+List every step from the pipeline trace.
+
+## Test Results
+- Total / Passed / Failed / Broken counts
+- A short paragraph interpreting the results (what passed, what failed and why if known)
+
+## Defects Found
+If bugs exist: a table with columns: ID | Title | Severity | Test
+If no bugs: write "No defects found — all tests passed."
+
+## AI Code Review Highlights
+Summarise the most important findings from the AI code review (1-4 bullet points).
+If no code review data: write "No code review data available."
+
+## Recommendations
+2-4 actionable bullet points for the development team based on the test results and bugs found.
+
+Rules:
+- Write in English
+- Use professional QA language
+- Be concise — no filler phrases like "It is worth noting that..."
+- Do NOT invent data that is not in the inputs below
+
+=== PIPELINE TRACE ===
+{{PIPELINE_TRACE}}
+
+=== TEST RUN LOG ===
+{{TEST_RUN_LOG}}
+
+=== ALLURE RESULTS ===
+{{ALLURE_RESULTS}}
+
+=== BUG REPORT ===
+{{BUG_REPORT}}
+
+=== AI CODE REVIEW ===
+{{CODE_REVIEW}}

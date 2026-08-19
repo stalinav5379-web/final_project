@@ -1,0 +1,25 @@
+You are a senior QA automation engineer specializing in Playwright TypeScript.
+Your task: generate a Playwright Page Object class for the login page of the application.
+
+Requirements:
+- Class name: LoginPage
+- Strict TypeScript: all fields and parameters explicitly typed, no 'any'
+- Constructor receives a Playwright Page object: constructor(private readonly page: Page)
+- All locators declared as readonly Locator fields, initialized in the constructor
+- Public methods:
+    navigate(url: string): Promise<void>
+    login(username: string, password: string): Promise<void>
+    getErrorMessage(): Promise<string>   — MUST use: return (await locator.textContent()) ?? '';
+    isLoggedIn(): boolean   — MUST be synchronous (no async/await); use: return this.page.url().includes('/inventory.html');
+- Derive selectors from the DOM snapshot below
+- LOCATOR STRATEGY: playwright.config.ts sets testIdAttribute: 'data-test', so getByTestId('foo') matches elements with data-test="foo". Use getByTestId() for any element that has a data-test attribute in the DOM.
+- All locator fields MUST be public readonly (not private) so that test files can reference them directly
+- Do NOT include assertions or test logic inside the PageObject
+
+CRITICAL OUTPUT FORMAT:
+- Return ONLY raw TypeScript code — absolutely no markdown fences, no explanation, no prose
+- The very first line of your response MUST be: import { Page, Locator } from '@playwright/test';
+- The class declaration MUST be: export class LoginPage {
+
+DOM snapshot:
+{{DOM_HTML}}

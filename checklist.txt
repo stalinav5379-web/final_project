@@ -1,0 +1,66 @@
+CHECKLIST: https://www.saucedemo.com/ — Authorization
+===========================================================
+
+[ ] SETUP
+    [ ] Открыть https://www.saucedemo.com/
+    [ ] Убедиться, что страница загрузилась (виден заголовок "Swag Labs")
+
+---
+
+[ ] TC-01: Успешная авторизация (стандартный пользователь)
+    Input : username = standard_user, password = secret_sauce
+    Steps : Ввести логин → ввести пароль → нажать "Login"
+    Expect: Редирект на /inventory.html, виден заголовок "Products"
+
+[ ] TC-02: Успешная авторизация (performance_glitch_user)
+    Input : username = performance_glitch_user, password = secret_sauce
+    Steps : Ввести логин → ввести пароль → нажать "Login"
+    Expect: Вход выполнен (возможна задержка), открывается страница товаров
+
+---
+
+[ ] TC-03: Ошибка — неверный пароль
+    Input : username = standard_user, password = wrong_password
+    Steps : Ввести логин → ввести неверный пароль → нажать "Login"
+    Expect: Сообщение об ошибке "Username and password do not match any user"
+            Поля username и password подсвечены красной иконкой
+            Остаёмся на странице логина
+
+[ ] TC-04: Ошибка — неверный логин
+    Input : username = unknown_user, password = secret_sauce
+    Steps : Ввести несуществующий логин → ввести пароль → нажать "Login"
+    Expect: То же сообщение об ошибке, что в TC-03
+
+[ ] TC-05: Ошибка — заблокированный пользователь
+    Input : username = locked_out_user, password = secret_sauce
+    Steps : Ввести логин заблокированного пользователя → нажать "Login"
+    Expect: Сообщение "Sorry, this user has been locked out."
+
+[ ] TC-06: Ошибка — пустые поля
+    Input : username = (пусто), password = (пусто)
+    Steps : Нажать "Login" без заполнения полей
+    Expect: Сообщение "Username is required"
+            Поле username подсвечено красной иконкой
+
+[ ] TC-07: Ошибка — пустой пароль
+    Input : username = standard_user, password = (пусто)
+    Steps : Ввести логин → оставить пароль пустым → нажать "Login"
+    Expect: Сообщение "Password is required"
+            Поле password подсвечено красной иконкой
+
+---
+
+[ ] TC-08: Закрытие сообщения об ошибке
+    Input : Любой неверный логин/пароль
+    Steps : Вызвать ошибку → нажать крестик (×) на баннере ошибки
+    Expect: Баннер ошибки скрывается, иконки с полей пропадают
+
+[ ] TC-09: Выход из аккаунта (Logout)
+    Input : Авторизованный standard_user
+    Steps : Войти → открыть бургер-меню (≡) → нажать "Logout"
+    Expect: Редирект обратно на /  (страница логина), сессия сброшена
+
+---
+
+[ ] TEARDOWN
+    [ ] Закрыть браузер / сбросить сессию

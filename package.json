@@ -1,0 +1,35 @@
+{
+  "name": "final-project",
+  "version": "1.0.0",
+  "description": "AI-Driven QA Pipeline: automated test generation with Mistral AI and Playwright",
+  "main": "dist/orchestrator/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/orchestrator/main.js",
+    "dev": "ts-node src/orchestrator/main.ts",
+    "test": "npx playwright test",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\""
+  },
+  "keywords": ["qa", "automation", "ai", "playwright", "mistral"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.0.0",
+    "allure-commandline": "^2.30.0",
+    "allure-playwright": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

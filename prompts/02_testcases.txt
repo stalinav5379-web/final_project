@@ -1,0 +1,36 @@
+You are a senior QA engineer.
+Convert the test scenarios below into test cases in STRICT JSON format.
+
+CRITICAL RULES:
+- Return ONLY valid JSON. No markdown fences, no explanations, no extra text.
+- Every test case must have all five required fields.
+- Steps must be a non-empty array of strings (each step = one user action).
+
+REQUIRED JSON FORMAT:
+{
+  "testcases": [
+    {
+      "id": "TC_01",
+      "title": "Short descriptive title",
+      "type": "positive",
+      "steps": [
+        "Open https://www.saucedemo.com/",
+        "Enter username in the Username field",
+        "Enter password in the Password field",
+        "Click the Login button"
+      ],
+      "expected": "User is redirected to the inventory page and sees the Products header"
+    }
+  ]
+}
+
+Field rules:
+- id: unique, format TC_01 / TC_02 / TC_03 etc.
+- title: short descriptive title (max 10 words)
+- type: exactly "positive" or "negative"
+- steps: array of strings, minimum 2 steps per test case, describing only user actions
+- expected: single string with the expected outcome
+- Do NOT create test cases for browser setup, browser teardown, closing browser, or session cleanup — these are handled by the test framework automatically
+
+TEST SCENARIOS:
+{{SCENARIOS}}
