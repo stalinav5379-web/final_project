@@ -9,8 +9,10 @@ export class GitSkill implements AgentSkill {
   }
 
   async execute(ctx: AgentContext): Promise<void> {
-    const date = new Date().toISOString().slice(0, 10);
-    const branch = `qa/auto-tests-${date}`;
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10);
+    const time = now.toISOString().slice(11, 16).replace(':', '');
+    const branch = `qa/auto-tests-${date}-${time}`;
 
     console.log(`  Creating branch: ${branch}`);
     this.exec(`git checkout -B ${branch}`);
