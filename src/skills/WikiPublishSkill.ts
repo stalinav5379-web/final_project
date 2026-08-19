@@ -23,7 +23,21 @@ export class WikiPublishSkill implements AgentSkill {
       return;
     }
 
-    const report = fs.readFileSync(reportPath, 'utf-8');
+    const baseReport = fs.readFileSync(reportPath, 'utf-8');
+
+    const repo2 = process.env.GITHUB_REPO ?? '';
+    const date = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const links = [
+      '',
+      '---',
+      '## Links',
+      `- **Run date:** ${date} UTC`,
+      ctx.prUrl ? `- **Pull Request:** [${ctx.prUrl}](${ctx.prUrl})` : '',
+      `- **Allure Report:** GitHub Actions → [Actions](https://github.com/${repo2}/actions) → latest run → Artifacts → \`allure-report\``,
+      `- **Repository:** [${repo2}](https://github.com/${repo2})`,
+    ].filter(Boolean).join('\n');
+
+    const report = baseReport + links;
     const wikiUrl = `https://${token}@github.com/${repo}.wiki.git`;
     const tmpDir = path.join(os.tmpdir(), `wiki-${Date.now()}`);
 
