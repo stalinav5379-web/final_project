@@ -4,14 +4,14 @@ export class LoginPage {
   public readonly passwordInput: Locator;
   public readonly loginButton: Locator;
   public readonly errorMessageContainer: Locator;
-  public readonly errorButton: Locator;
+  public readonly loginCredentialsContainer: Locator;
 
   constructor(private readonly page: Page) {
     this.usernameInput = this.page.getByTestId('username');
     this.passwordInput = this.page.getByTestId('password');
     this.loginButton = this.page.getByTestId('login-button');
     this.errorMessageContainer = this.page.getByTestId('error-message-container');
-    this.errorButton = this.page.getByTestId('error-button');
+    this.loginCredentialsContainer = this.page.getByTestId('login-credentials-container');
   }
 
   public async navigate(url: string): Promise<void> {
@@ -25,10 +25,11 @@ export class LoginPage {
   }
 
   public async getErrorMessage(): Promise<string> {
-    return (await this.errorMessageContainer.textContent()) ?? '';
+    const message = await this.errorMessageContainer.textContent();
+    return message ?? '';
   }
 
-  public isLoggedIn(): boolean {
+  public async isLoggedIn(): Promise<boolean> {
     return this.page.url().includes('/inventory.html');
   }
 }
