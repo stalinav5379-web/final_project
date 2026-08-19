@@ -10,7 +10,7 @@ export class LoginPage {
     this.usernameInput = this.page.getByTestId('username');
     this.passwordInput = this.page.getByTestId('password');
     this.loginButton = this.page.getByTestId('login-button');
-    this.errorMessageContainer = this.page.getByTestId('error-message-container');
+    this.errorMessageContainer = this.page.locator('.error-message-container');
     this.loginCredentialsContainer = this.page.getByTestId('login-credentials-container');
   }
 
@@ -25,11 +25,10 @@ export class LoginPage {
   }
 
   public async getErrorMessage(): Promise<string> {
-    const message = await this.errorMessageContainer.textContent();
-    return message ?? '';
+    return (await this.errorMessageContainer.textContent()) ?? '';
   }
 
-  public async isLoggedIn(): Promise<boolean> {
+  public isLoggedIn(): boolean {
     return this.page.url().includes('/inventory.html');
   }
 }
