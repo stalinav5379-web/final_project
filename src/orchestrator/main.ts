@@ -17,6 +17,7 @@ import { AllureSkill } from '../skills/AllureSkill';
 import { GitSkill } from '../skills/GitSkill';
 import { BugReportSkill } from '../skills/BugReportSkill';
 import { SummarySkill } from '../skills/SummarySkill';
+import { WikiPublishSkill } from '../skills/WikiPublishSkill';
 
 const skills: AgentSkill[] = [
   // --- День 1 ---
@@ -38,6 +39,7 @@ const skills: AgentSkill[] = [
   new GitSkill(),         // пушит только после зелёных/исчерпанных попыток
   new BugReportSkill(),
   new SummarySkill(),
+  new WikiPublishSkill(),
 ];
 
 async function run(): Promise<void> {
