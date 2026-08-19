@@ -8,7 +8,6 @@ export class LoginPage {
   public readonly loginCredentialsContainer: Locator;
   public readonly loginCredentials: Locator;
   public readonly loginPassword: Locator;
-  public readonly errorMessageContainer: Locator;
 
   constructor(private readonly page: Page) {
     this.usernameInput = this.page.getByTestId('username');
@@ -18,7 +17,6 @@ export class LoginPage {
     this.loginCredentialsContainer = this.page.getByTestId('login-credentials-container');
     this.loginCredentials = this.page.getByTestId('login-credentials');
     this.loginPassword = this.page.getByTestId('login-password');
-    this.errorMessageContainer = this.page.locator('.error-message-container');
   }
 
   public async navigate(url: string): Promise<void> {
@@ -32,7 +30,8 @@ export class LoginPage {
   }
 
   public async getErrorMessage(): Promise<string> {
-    return (await this.errorMessageContainer.textContent()) ?? '';
+    const errorLocator = this.page.locator('.error-message-container');
+    return (await errorLocator.textContent()) ?? '';
   }
 
   public isLoggedIn(): boolean {
