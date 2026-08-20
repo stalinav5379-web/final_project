@@ -69,7 +69,7 @@ export class UiTestGenerationSkill implements AgentSkill {
         { temperature: 0.1, maxTokens: 4096 },
       );
 
-      const code = this.stripMarkdown(raw);
+      const code = this.autofix(this.stripMarkdown(raw));
       const error = this.validate(code, kind);
 
       if (!error) {
@@ -86,6 +86,10 @@ export class UiTestGenerationSkill implements AgentSkill {
     }
 
     throw new Error(`Failed to generate valid ${label} after ${MAX_RETRIES} attempts. Last error: ${lastError}`);
+  }
+
+  private autofix(code: string): string {
+    return code.replace(/\.getByTest\((?!Id)/g, '.getByTestId(');
   }
 
   private stripMarkdown(code: string): string {
