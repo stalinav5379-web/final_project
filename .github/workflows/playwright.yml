@@ -41,6 +41,8 @@ jobs:
       - name: Run Playwright tests
         env:
           APP_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+          APPLICATION_URL: https://www.saucedemo.com/
+          TEST_ID_ATTRIBUTE: data-test
         run: npm test
 
       - name: Generate Allure report
