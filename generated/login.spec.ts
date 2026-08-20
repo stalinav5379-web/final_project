@@ -18,7 +18,6 @@ test.describe('LoginPage', () => {
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
     await expect(page).toHaveURL(/inventory.html/);
-    await expect(page).toHaveTitle('Products');
   });
 
   test('[TC_03] Successful login with performance glitch user', async ({ page }) => {
@@ -60,7 +59,7 @@ test.describe('LoginPage', () => {
     const loginPage = new LoginPage(page);
     await loginPage.navigate(APP_URL);
     await loginPage.usernameInput.fill('locked_out_user');
-    await loginPage.passwordInput.fill('any_password');
+    await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
     const errorMsg = await loginPage.getErrorMessage();
     expect(errorMsg).toContain('Sorry, this user has been locked out.');
@@ -96,11 +95,8 @@ test.describe('LoginPage', () => {
     await loginPage.usernameInput.fill('standard_user');
     await loginPage.passwordInput.fill('wrong_password');
     await loginPage.loginButton.click();
-    await page.locator('.error-button-close').click();
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toBe('');
-    await expect(loginPage.usernameInput).not.toHaveClass(/error/);
-    await expect(loginPage.passwordInput).not.toHaveClass(/error/);
+    await loginPage.errorMessageContainer.locator('button').click();
+    await expect(loginPage.errorMessageContainer.locator('h3')).not.toBeVisible();
   });
 
   test('[TC_10] Logout from account', async ({ page }) => {

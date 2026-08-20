@@ -14,9 +14,9 @@ export class LoginPage {
     this.passwordInput = this.page.getByTestId('password');
     this.loginButton = this.page.getByTestId('login-button');
     this.errorMessageContainer = this.page.locator('.error-message-container');
-    this.loginCredentialsContainer = this.page.getByTest('login-credentials-container');
-    this.loginCredentials = this.page.getByTest('login-credentials');
-    this.loginPassword = this.page.getByTest('login-password');
+    this.loginCredentialsContainer = this.page.getByTestId('login-credentials-container');
+    this.loginCredentials = this.page.getByTestId('login-credentials');
+    this.loginPassword = this.page.getByTestId('login-password');
   }
 
   public async navigate(url: string): Promise<void> {
