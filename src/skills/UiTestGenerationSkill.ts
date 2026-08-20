@@ -89,7 +89,14 @@ export class UiTestGenerationSkill implements AgentSkill {
   }
 
   private autofix(code: string): string {
-    return code.replace(/\.getByTest\((?!Id)/g, '.getByTestId(');
+    let result = code;
+    result = result.replace(/\.getByTest\((?!Id)/g, '.getByTestId(');
+    // .error-message-container is always in DOM — toBeHidden() always fails
+    result = result.replace(
+      /expect\([^)]*errorMessageContainer[^)]*\)\.toBeHidden\(\)/g,
+      "expect(page.locator('.error-message-container h3')).not.toBeVisible()",
+    );
+    return result;
   }
 
   private stripMarkdown(code: string): string {

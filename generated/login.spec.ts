@@ -96,7 +96,7 @@ test.describe('LoginPage', () => {
     await loginPage.passwordInput.fill('incorrect_password');
     await loginPage.loginButton.click();
     await page.locator('.error-message-container button').click();
-    await expect(loginPage.errorMessageContainer).toBeHidden();
+    await expect(page.locator('.error-message-container h3')).not.toBeVisible();
     await expect(loginPage.usernameInput).not.toHaveClass(/error/);
     await expect(loginPage.passwordInput).not.toHaveClass(/error/);
   });
