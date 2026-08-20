@@ -24,7 +24,7 @@ CREDENTIALS RULE — important:
 ASSERTION RULES:
 - When asserting on a string variable (e.g. const msg = await pageObj.getErrorMessage()), use expect(msg).toContain(...) WITHOUT await — string assertions are synchronous
 - When asserting URL after a navigation action, use toHaveURL(APP_URL) or toHaveURL(/pattern/) — NEVER hardcode a URL string
-- Do NOT assert on container elements that are always present in the DOM with toBeVisible() or not.toBeVisible() — instead assert on specific child content inside them (e.g. locator('h3') inside the container)
+- Do NOT assert on container elements that are always present in the DOM with toBeVisible(), not.toBeVisible(), or toBeHidden() — the container div stays in DOM even when empty, so these assertions will always fail. Instead assert on specific child content inside them (e.g. locator('h3') inside the container). Example: after closing an error banner, use expect(container.locator('h3')).not.toBeVisible() — NOT expect(container).toBeHidden()
 - After a successful login, assert ONLY toHaveURL() — do NOT add extra assertions about page content, product names, or elements on the destination page
 
 CRITICAL OUTPUT FORMAT:
