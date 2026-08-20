@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './LoginPage';
 
-const APP_URL = process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/';
+const APP_URL = process.env.APPLICATION_URL ?? 'https://example.com/';
 const PASSWORD = process.env.APP_PASSWORD ?? 'secret_sauce';
 
 test.describe('LoginPage', () => {
@@ -17,7 +17,7 @@ test.describe('LoginPage', () => {
     await loginPage.usernameInput.fill('standard_user');
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
-    await expect(page).toHaveURL(/inventory.html/);
+    await expect(page).toHaveURL(/.*inventory.html/);
   });
 
   test('[TC_03] Login with performance glitch user', async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe('LoginPage', () => {
     await loginPage.usernameInput.fill('performance_glitch_user');
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
-    await expect(page).toHaveURL(/inventory.html/);
+    await expect(page).toHaveURL(/.*inventory.html/);
   });
 
   test('[TC_04] Attempt login with incorrect password', async ({ page }) => {
@@ -46,7 +46,7 @@ test.describe('LoginPage', () => {
     const loginPage = new LoginPage(page);
     await loginPage.navigate(APP_URL);
     await loginPage.usernameInput.fill('unknown_user');
-    await loginPage.passwordInput.fill(PASSWORD);
+    await loginPage.passwordInput.fill('any_password');
     await loginPage.loginButton.click();
     const errorMsg = await loginPage.getErrorMessage();
     expect(errorMsg).toContain('Username and password do not match any user');
@@ -71,7 +71,6 @@ test.describe('LoginPage', () => {
   test('[TC_07] Attempt login with empty username', async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.navigate(APP_URL);
-    await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
     const errorMsg = await loginPage.getErrorMessage();
     expect(errorMsg).toContain('Username is required');
@@ -90,14 +89,16 @@ test.describe('LoginPage', () => {
     await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_09] Close error banner after login failure', async ({ page }) => {
+  test('[TC_09] Close error banner after failed login', async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.navigate(APP_URL);
     await loginPage.usernameInput.fill('standard_user');
-    await loginPage.passwordInput.fill('incorrect_password');
+    await loginPage.passwordInput.fill('wrong');
     await loginPage.loginButton.click();
-    await loginPage.errorMessageContainer.locator('button').click();
-    await expect(loginPage.errorMessageContainer.locator('h3')).not.toBeVisible();
+    await page.locator('.error-message-container button').click();
+    await expect(page.locator('.error-message-container')).toBeHidden();
+    await expect(loginPage.usernameInput).not.toHaveClass(/error/);
+    await expect(loginPage.passwordInput).not.toHaveClass(/error/);
   });
 
   test('[TC_10] Logout from account', async ({ page }) => {
