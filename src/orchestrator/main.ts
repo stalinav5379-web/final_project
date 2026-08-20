@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AgentContext } from './AgentContext';
 import type { AgentSkill } from './AgentSkill';
 import { BuildScenariosPromptSkill } from '../skills/BuildScenariosPromptSkill';
@@ -42,12 +44,24 @@ const skills: AgentSkill[] = [
   new WikiPublishSkill(),
 ];
 
+function cleanGeneratedFiles(): void {
+  const dir = path.resolve('generated');
+  if (!fs.existsSync(dir)) return;
+  const stale = fs.readdirSync(dir).filter(f => f.endsWith('.spec.ts') || f.endsWith('Page.ts'));
+  for (const f of stale) {
+    fs.rmSync(path.join(dir, f));
+    console.log(`  cleaned: generated/${f}`);
+  }
+}
+
 async function run(): Promise<void> {
   const ctx = new AgentContext();
 
   console.log('\n╔══════════════════════════════════╗');
   console.log('║     AI-Driven QA Pipeline        ║');
   console.log('╚══════════════════════════════════╝\n');
+
+  cleanGeneratedFiles();
 
   for (const skill of skills) {
     console.log(`\n▶  ${skill.name()}`);
