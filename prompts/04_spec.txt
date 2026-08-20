@@ -25,6 +25,7 @@ ASSERTION RULES:
 - When asserting on a string variable (e.g. const msg = await pageObj.getErrorMessage()), use expect(msg).toContain(...) WITHOUT await — string assertions are synchronous
 - When asserting URL after a navigation action, use toHaveURL(APP_URL) or toHaveURL(/pattern/) — NEVER hardcode a URL string
 - Do NOT assert on container elements that are always present in the DOM with toBeVisible() or not.toBeVisible() — instead assert on specific child content inside them (e.g. locator('h3') inside the container)
+- After a successful login, assert ONLY toHaveURL() — do NOT add extra assertions about page content, product names, or elements on the destination page
 
 CRITICAL OUTPUT FORMAT:
 - Return ONLY raw TypeScript code — absolutely no markdown fences, no explanation, no prose
