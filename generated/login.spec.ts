@@ -108,8 +108,8 @@ test.describe('LoginPage', () => {
     await loginPage.usernameInput.fill('standard_user');
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
-    await page.locator('[data-test="react-burger-menu-btn"]').click();
-    await page.locator('[data-test="logout-sidebar-link"]').click();
+    await page.locator('#react-burger-menu-btn').click();
+    await page.locator('#logout_sidebar_link').click();
     await expect(page).toHaveURL(APP_URL);
   });
 });
