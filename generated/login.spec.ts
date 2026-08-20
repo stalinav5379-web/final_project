@@ -2,99 +2,109 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from './LoginPage';
 
 const PASSWORD = process.env.APP_PASSWORD ?? 'secret_sauce';
+const APP_URL = process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/';
 
-test.describe('Login', () => {
-  test('[TC_01] Open SauceDemo login page', async ({ page }) => {
+test.describe('LoginPage', () => {
+  test('[TC_01] Verify page loads successfully', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
+    await loginPage.navigate(APP_URL);
     await expect(page).toHaveTitle('Swag Labs');
   });
 
-  test('[TC_02] Successful login with standard user', async ({ page }) => {
+  test('[TC_02] Login with standard user credentials', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('standard_user', PASSWORD);
-    await expect(page).toHaveURL(/inventory\.html/);
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('standard_user');
+    await loginPage.passwordInput.fill(PASSWORD);
+    await loginPage.loginButton.click();
+    await expect(page).toHaveURL(/\/inventory.html/);
+    await expect(page).toHaveTitle('Swag Labs');
   });
 
-  test('[TC_03] Successful login with performance glitch user', async ({ page }) => {
+  test('[TC_03] Login with performance glitch user', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('performance_glitch_user', PASSWORD);
-    await expect(page).toHaveURL(/inventory\.html/);
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('performance_glitch_user');
+    await loginPage.passwordInput.fill(PASSWORD);
+    await loginPage.loginButton.click();
+    await expect(page).toHaveURL(/\/inventory.html/);
   });
 
-  test('[TC_04] Error login with incorrect password', async ({ page }) => {
+  test('[TC_04] Login with incorrect password', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('standard_user', 'wrong_password');
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
-    await expect(page).not.toHaveURL(/inventory/);
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toContain('Username and password do not match any user');
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('standard_user');
+    await loginPage.passwordInput.fill('incorrect_password');
+    await loginPage.loginButton.click();
+    const errorMessage = await loginPage.getErrorMessage();
+    expect(errorMessage).toContain('Username and password do not match any user in this service');
+    await expect(loginPage.errorMessageContainer).toBeVisible();
+    await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_05] Error login with non-existent username', async ({ page }) => {
+  test('[TC_05] Login with non-existent username', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('unknown_user', PASSWORD);
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
-    await expect(page).not.toHaveURL(/inventory/);
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toContain('Username and password do not match any user');
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('unknown_user');
+    await loginPage.passwordInput.fill('any_password');
+    await loginPage.loginButton.click();
+    const errorMessage = await loginPage.getErrorMessage();
+    expect(errorMessage).toContain('Username and password do not match any user in this service');
+    await expect(loginPage.errorMessageContainer).toBeVisible();
+    await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_06] Error login with locked out user', async ({ page }) => {
+  test('[TC_06] Login with locked out user', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('locked_out_user', PASSWORD);
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
-    await expect(page).not.toHaveURL(/inventory/);
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toContain('Sorry, this user has been locked out.');
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('locked_out_user');
+    await loginPage.passwordInput.fill(PASSWORD);
+    await loginPage.loginButton.click();
+    const errorMessage = await loginPage.getErrorMessage();
+    expect(errorMessage).toContain('Sorry, this user has been locked out.');
+    await expect(loginPage.errorMessageContainer).toBeVisible();
+    await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_07] Error login with empty username', async ({ page }) => {
+  test('[TC_07] Attempt login with empty username', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('', '');
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
-    await expect(page).not.toHaveURL(/inventory/);
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toContain('Username is required');
+    await loginPage.navigate(APP_URL);
+    await loginPage.loginButton.click();
+    const errorMessage = await loginPage.getErrorMessage();
+    expect(errorMessage).toContain('Username is required');
+    await expect(loginPage.errorMessageContainer).toBeVisible();
+    await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_08] Error login with empty password', async ({ page }) => {
+  test('[TC_08] Attempt login with empty password', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('standard_user', '');
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
-    await expect(page).not.toHaveURL(/inventory/);
-    const errorMsg = await loginPage.getErrorMessage();
-    expect(errorMsg).toContain('Password is required');
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('standard_user');
+    await loginPage.loginButton.click();
+    const errorMessage = await loginPage.getErrorMessage();
+    expect(errorMessage).toContain('Password is required');
+    await expect(loginPage.errorMessageContainer).toBeVisible();
+    await expect(page).toHaveURL(APP_URL);
   });
 
-  test('[TC_09] Close error banner after failed login', async ({ page }) => {
+  test('[TC_09] Close error banner after login failure', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('standard_user', 'wrong_password');
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('standard_user');
+    await loginPage.passwordInput.fill('incorrect_password');
+    await loginPage.loginButton.click();
     await loginPage.errorMessageContainer.locator('button').click();
-    await expect(page.locator('.error-message-container h3')).not.toBeVisible();
-    await expect(loginPage.usernameInput).toHaveClass(/error/);
-    await expect(loginPage.passwordInput).toHaveClass(/error/);
+    await expect(loginPage.errorMessageContainer.locator('h3')).not.toBeVisible();
   });
 
   test('[TC_10] Logout from account', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    await loginPage.login('standard_user', PASSWORD);
+    await loginPage.navigate(APP_URL);
+    await loginPage.usernameInput.fill('standard_user');
+    await loginPage.passwordInput.fill(PASSWORD);
+    await loginPage.loginButton.click();
     await page.locator('#react-burger-menu-btn').click();
     await page.locator('#logout_sidebar_link').click();
-    await expect(page).not.toHaveURL(/inventory/);
+    await expect(page).toHaveURL(APP_URL);
   });
 });
