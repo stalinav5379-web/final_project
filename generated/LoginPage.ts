@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+
 export class LoginPage {
   public readonly usernameInput: Locator;
   public readonly passwordInput: Locator;
