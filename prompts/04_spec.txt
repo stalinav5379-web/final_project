@@ -6,9 +6,10 @@ Requirements:
 - Second line: import { {{PAGE_CLASS_NAME}} } from './{{PAGE_FILE_NAME}}';
 - One top-level describe block: test.describe('{{PAGE_CLASS_NAME}}', () => { ... })   — MUST use test.describe, NOT describe
 - One test() per test case; test title must be: `[{id}] {title}`
+- At the top of the file (after imports) define: const APP_URL = process.env.APPLICATION_URL ?? 'https://example.com/';
 - Each test body:
     1. Create: const page = new {{PAGE_CLASS_NAME}}(page);  — note: rename if it shadows the page fixture, e.g. const pageObj = new {{PAGE_CLASS_NAME}}(page);
-    2. Call navigate with APPLICATION_URL from env
+    2. Call navigate(APP_URL) — ALWAYS use APP_URL variable, NEVER hardcode a URL string
     3. Execute the steps using page object methods
     4. Assert the expected outcome using expect()
 - Do NOT add beforeEach, afterEach, beforeAll, afterAll hooks — all setup must be inlined inside each test()
@@ -22,8 +23,8 @@ CREDENTIALS RULE — important:
 
 ASSERTION RULES:
 - When asserting on a string variable (e.g. const msg = await pageObj.getErrorMessage()), use expect(msg).toContain(...) WITHOUT await — string assertions are synchronous
-- When asserting URL after a navigation action, use toHaveURL() with the correct URL pattern observed from the DOM snapshot and test cases
-- Do NOT assert on elements that are always present in the DOM with toBeVisible() — instead assert on the specific content inside them
+- When asserting URL after a navigation action, use toHaveURL(APP_URL) or toHaveURL(/pattern/) — NEVER hardcode a URL string
+- Do NOT assert on container elements that are always present in the DOM with toBeVisible() or not.toBeVisible() — instead assert on specific child content inside them (e.g. locator('h3') inside the container)
 
 CRITICAL OUTPUT FORMAT:
 - Return ONLY raw TypeScript code — absolutely no markdown fences, no explanation, no prose

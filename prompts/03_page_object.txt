@@ -12,7 +12,7 @@ Requirements:
     isLoggedIn(): boolean   — MUST be synchronous (no async/await); use: return this.page.url().includes('/inventory');
 - Derive selectors from the DOM snapshot below
 - LOCATOR STRATEGY (in order of preference):
-    1. getByTestId('value') — for elements with a test ID attribute in the DOM
+    1. getByTestId('value') — for elements with a test ID attribute in the DOM. IMPORTANT: the method is getByTestId (with "Id" at the end), NOT getByTest — getByTest does not exist in Playwright
     2. getByRole('button', { name: '...' }) — for semantic elements
     3. getByLabel('...') — for form fields with labels
     4. page.locator('.css-class') — fallback only when none of the above apply
