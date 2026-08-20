@@ -91,10 +91,19 @@ export class UiTestGenerationSkill implements AgentSkill {
   private autofix(code: string): string {
     let result = code;
     result = result.replace(/\.getByTest\((?!Id)/g, '.getByTestId(');
-    // .error-message-container is always in DOM — toBeHidden() always fails
+    // .error-message-container is always in DOM — toBeHidden()/not.toBeVisible() on it always fail
     result = result.replace(
       /expect\([^)]*errorMessageContainer[^)]*\)\.toBeHidden\(\)/g,
       "expect(page.locator('.error-message-container h3')).not.toBeVisible()",
+    );
+    result = result.replace(
+      /expect\([^)]*errorMessageContainer[^)]*\)\.not\.toBeVisible\(\)/g,
+      "expect(page.locator('.error-message-container h3')).not.toBeVisible()",
+    );
+    // .error-button-close does not exist on saucedemo
+    result = result.replace(
+      /page\.locator\(['"]\.error-button-close['"]\)/g,
+      "page.locator('[data-test=\"error-button\"]')",
     );
     return result;
   }
