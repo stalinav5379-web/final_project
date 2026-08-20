@@ -4,6 +4,7 @@ import type { AgentSkill } from '../orchestrator/AgentSkill';
 import type { AgentContext } from '../orchestrator/AgentContext';
 import { MistralClient } from '../orchestrator/MistralClient';
 import { PromptEngine } from '../orchestrator/PromptEngine';
+import { getPageClassName, getPageObjectFileName, getPageObjectFilePath, getSpecFileName, getSpecFilePath } from '../orchestrator/PageConfig';
 
 const MAX_RETRIES = 3;
 const DOM_LIMIT = 30_000;
@@ -20,19 +21,28 @@ export class UiTestGenerationSkill implements AgentSkill {
     const dom = ctx.domHtml.slice(0, DOM_LIMIT);
     const testcasesJson = JSON.stringify(ctx.testcases, null, 2);
 
+    const pageClassName = getPageClassName();
+    const pageObjectFileName = getPageObjectFileName();
+    const specFileName = getSpecFileName();
+
     ctx.generatedPageObject = await this.generateWithRetry(
       'prompts/03_page_object.txt',
-      { DOM_HTML: dom },
-      'LoginPage.ts',
-      'generated/LoginPage.ts',
+      { DOM_HTML: dom, PAGE_CLASS_NAME: pageClassName },
+      pageObjectFileName,
+      getPageObjectFilePath(),
       'pageobject',
     );
 
     ctx.generatedSpec = await this.generateWithRetry(
       'prompts/04_spec.txt',
-      { PAGE_OBJECT: ctx.generatedPageObject, TESTCASES: testcasesJson },
-      'login.spec.ts',
-      'generated/login.spec.ts',
+      {
+        PAGE_OBJECT: ctx.generatedPageObject,
+        TESTCASES: testcasesJson,
+        PAGE_CLASS_NAME: pageClassName,
+        PAGE_FILE_NAME: pageObjectFileName.replace('.ts', ''),
+      },
+      specFileName,
+      getSpecFilePath(),
       'spec',
     );
   }

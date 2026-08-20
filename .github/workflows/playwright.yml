@@ -35,18 +35,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Set up Java (required for Allure)
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         env:
-          SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+          APP_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
         run: npm test
 
       - name: Generate Allure report

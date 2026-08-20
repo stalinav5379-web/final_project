@@ -1,8 +1,7 @@
 import { execSync } from 'child_process';
 import type { AgentSkill } from '../orchestrator/AgentSkill';
 import type { AgentContext } from '../orchestrator/AgentContext';
-
-const TARGETS = 'generated/LoginPage.ts generated/login.spec.ts';
+import { getPageObjectFilePath, getSpecFilePath } from '../orchestrator/PageConfig';
 
 export class CodeStyleSkill implements AgentSkill {
   name(): string {
@@ -10,25 +9,26 @@ export class CodeStyleSkill implements AgentSkill {
   }
 
   async execute(ctx: AgentContext): Promise<void> {
-    this.runPrettier();
-    ctx.lintOutput = this.runEslint();
+    const targets = `${getPageObjectFilePath()} ${getSpecFilePath()}`;
+    this.runPrettier(targets);
+    ctx.lintOutput = this.runEslint(targets);
     console.log(`  Lint output saved (${ctx.lintOutput.length} chars)`);
   }
 
-  private runPrettier(): void {
+  private runPrettier(targets: string): void {
     console.log('  Running Prettier...');
     try {
-      execSync(`npx prettier --write ${TARGETS}`, { encoding: 'utf-8', stdio: 'pipe' });
+      execSync(`npx prettier --write ${targets}`, { encoding: 'utf-8', stdio: 'pipe' });
       console.log('  Prettier: formatted');
     } catch (err: unknown) {
       console.warn('  Prettier warning:', this.extractMessage(err).slice(0, 200));
     }
   }
 
-  private runEslint(): string {
+  private runEslint(targets: string): string {
     console.log('  Running ESLint...');
     try {
-      execSync(`npx eslint ${TARGETS}`, { encoding: 'utf-8', stdio: 'pipe' });
+      execSync(`npx eslint ${targets}`, { encoding: 'utf-8', stdio: 'pipe' });
       console.log('  ESLint: no issues found');
       return 'ESLint: no issues found';
     } catch (err: unknown) {

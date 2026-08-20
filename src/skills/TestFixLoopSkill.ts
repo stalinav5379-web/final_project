@@ -5,6 +5,7 @@ import type { AgentSkill } from '../orchestrator/AgentSkill';
 import type { AgentContext } from '../orchestrator/AgentContext';
 import { MistralClient } from '../orchestrator/MistralClient';
 import { PromptEngine } from '../orchestrator/PromptEngine';
+import { getSpecFilePath } from '../orchestrator/PageConfig';
 
 const MAX_ROUNDS = 3;
 
@@ -47,10 +48,10 @@ export class TestFixLoopSkill implements AgentSkill {
         continue;
       }
 
-      const specPath = path.resolve('generated/login.spec.ts');
+      const specPath = path.resolve(getSpecFilePath());
       fs.writeFileSync(specPath, fixedSpec, 'utf-8');
       ctx.generatedSpec = fixedSpec;
-      console.log(`  Spec updated → generated/login.spec.ts — re-running tests...`);
+      console.log(`  Spec updated → ${getSpecFilePath()} — re-running tests...`);
     }
   }
 
