@@ -221,6 +221,58 @@ npm run format:check      # Проверить форматирование бе
 
 ---
 
+## Запуск отдельного скилла в изоляции
+
+Любой скилл можно запустить отдельно от полного пайплайна — удобно для отладки.
+Пример уже есть в проекте: `src/debugBugReport.ts`.
+
+**Паттерн — создай файл `src/debug<SkillName>.ts`:**
+
+```typescript
+import 'dotenv/config';
+import { AgentContext } from './orchestrator/AgentContext';
+import { SummarySkill } from './skills/SummarySkill'; // подставь нужный скилл
+
+const ctx = new AgentContext();
+
+// Заполни только поля, которые нужны скиллу (см. таблицу ниже)
+ctx.testRunLog = '10 passed (15s)';
+ctx.allureJson = { passed: 10, failed: 0, total: 10, failures: [] };
+
+(async () => {
+  const skill = new SummarySkill();
+  await skill.execute(ctx);
+})();
+```
+
+**Запуск:**
+
+```bash
+npx ts-node src/debugSummary.ts
+```
+
+**Какие поля нужны каждому скиллу:**
+
+| Скилл | Обязательные поля `ctx` |
+|---|---|
+| `ScenarioGenerationSkill` | `ctx.scenariosPrompt` |
+| `TestcaseGenerationSkill` | `ctx.scenarios` |
+| `DomSnapshotSkill` | ничего (берёт `APPLICATION_URL` из `.env`) |
+| `UiTestGenerationSkill` | `ctx.testcases`, `ctx.domHtml` |
+| `CodeStyleSkill` | файлы `generated/LoginPage.ts` и `generated/login.spec.ts` на диске |
+| `AiCodeReviewSkill` | `ctx.generatedPageObject`, `ctx.generatedSpec`, `ctx.lintOutput` |
+| `AiCodeFixSkill` | `ctx.codeReview`, `ctx.generatedSpec`, `ctx.generatedPageObject` |
+| `TestFixLoopSkill` | `ctx.generatedSpec`, `ctx.generatedPageObject` |
+| `AllureSkill` | папка `allure-results/` на диске |
+| `BugReportSkill` | `ctx.testRunLog`, `ctx.allureJson` |
+| `SummarySkill` | `ctx.testRunLog`, `ctx.allureJson`, `ctx.bugReport`, `ctx.codeReview`, `ctx.steps` |
+| `GitSkill` | `ctx.generatedSpec`, `ctx.generatedPageObject`, `ctx.codeReview` + `.env` с `GITHUB_TOKEN`, `GITHUB_REPO` |
+| `WikiPublishSkill` | файл `generated/final_report.md` на диске, `ctx.prUrl` (опционально), `.env` с `GITHUB_TOKEN`, `GITHUB_REPO` |
+
+> Готовый пример изолированного запуска: `src/debugBugReport.ts`
+
+---
+
 ## План реализации (3 дня)
 
 ### День 1 — Основа + Шаги 1–5
