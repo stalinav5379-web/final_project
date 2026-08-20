@@ -8,21 +8,21 @@ Rules:
 
 Respond with exactly this structure (keep the === markers, they are used for parsing):
 
-=== LoginPage.ts ===
+=== {{PAGE_OBJECT_FILENAME}} ===
 ```typescript
-<full fixed content of LoginPage.ts>
+<full fixed content of {{PAGE_OBJECT_FILENAME}}>
 ```
 
-=== login.spec.ts ===
+=== {{SPEC_FILENAME}} ===
 ```typescript
-<full fixed content of login.spec.ts>
+<full fixed content of {{SPEC_FILENAME}}>
 ```
 
 === CODE REVIEW (issues to fix) ===
 {{CODE_REVIEW}}
 
-=== LoginPage.ts (current) ===
+=== {{PAGE_OBJECT_FILENAME}} (current) ===
 {{PAGE_OBJECT}}
 
-=== login.spec.ts (current) ===
+=== {{SPEC_FILENAME}} (current) ===
 {{SPEC}}

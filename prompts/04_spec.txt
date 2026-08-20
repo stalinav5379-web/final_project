@@ -3,45 +3,32 @@ Your task: generate a Playwright test spec file using the provided PageObject cl
 
 Requirements:
 - First line: import { test, expect } from '@playwright/test';
-- Second line: import { LoginPage } from './LoginPage';
-- One top-level describe block: test.describe('Login', () => { ... })   — MUST use test.describe, NOT describe (describe is not exported from @playwright/test)
+- Second line: import { {{PAGE_CLASS_NAME}} } from './{{PAGE_FILE_NAME}}';
+- One top-level describe block: test.describe('{{PAGE_CLASS_NAME}}', () => { ... })   — MUST use test.describe, NOT describe
 - One test() per test case; test title must be: `[{id}] {title}`
 - Each test body:
-    1. Create: const loginPage = new LoginPage(page);
-    2. Call: await loginPage.navigate(process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/');
-    3. Execute the steps from the test case using loginPage methods
-    4. Assert the 'expected' outcome using expect()
-- Do NOT add beforeEach, afterEach, beforeAll, afterAll hooks — all setup and teardown must be inlined inside each test() body
+    1. Create: const page = new {{PAGE_CLASS_NAME}}(page);  — note: rename if it shadows the page fixture, e.g. const pageObj = new {{PAGE_CLASS_NAME}}(page);
+    2. Call navigate with APPLICATION_URL from env
+    3. Execute the steps using page object methods
+    4. Assert the expected outcome using expect()
+- Do NOT add beforeEach, afterEach, beforeAll, afterAll hooks — all setup must be inlined inside each test()
 - Strict TypeScript, no 'any'
 
-CREDENTIALS RULE — very important:
+CREDENTIALS RULE — important:
 - Test data may contain [MASKED_PASSWORD] placeholders from the PII scanner — NEVER use [MASKED_PASSWORD] as a literal string in test code
-- For the correct password use: `process.env.SAUCE_PASSWORD ?? 'secret_sauce'`
-- Define it once at the top of the file: `const PASSWORD = process.env.SAUCE_PASSWORD ?? 'secret_sauce';`
+- For passwords use: `process.env.APP_PASSWORD ?? 'default_password'`
+- Define it once at the top of the file: `const PASSWORD = process.env.APP_PASSWORD ?? 'default_password';`
 - Use PASSWORD variable everywhere instead of a hardcoded string
 
-ERROR CLASS RULES — saucedemo specific behavior:
-- On ANY login failure, saucedemo adds class `error` to BOTH usernameInput AND passwordInput — regardless of which field caused the failure
-- ALWAYS assert BOTH fields have error class on login failures: `await expect(loginPage.usernameInput).toHaveClass(/error/)` AND `await expect(loginPage.passwordInput).toHaveClass(/error/)`
-- NEVER assert `not.toHaveClass(/error/)` on any input field after a failed login attempt
-
-URL ASSERTION RULES — follow exactly:
-- The login page URL is the site root: https://www.saucedemo.com/ (there is NO /login.html)
-- To assert "user stayed on login page after failed attempt": use `await expect(page).not.toHaveURL(/inventory/)`
-- To assert "user reached the inventory page after login": use `await expect(page).toHaveURL(/inventory\.html/)`
-- To assert "user returned to login after logout": use `await expect(page).not.toHaveURL(/inventory/)`
-- NEVER use toHaveURL(/login/) or toHaveURL(/login.html/) — that path does not exist
-
-ERROR MESSAGE ASSERTION RULES:
-- The error container `.error-message-container` is always present in the DOM — do NOT assert `not.toBeVisible()` on it
-- To assert the error banner is gone after closing: use `await expect(page.locator('.error-message-container h3')).not.toBeVisible()`
-- IMPORTANT: clicking the close button (X) only hides the error message — input fields KEEP their error CSS class. Do NOT assert `not.toHaveClass(/error/)` on inputs after closing the banner
+ASSERTION RULES:
+- When asserting on a string variable (e.g. const msg = await pageObj.getErrorMessage()), use expect(msg).toContain(...) WITHOUT await — string assertions are synchronous
+- When asserting URL after a navigation action, use toHaveURL() with the correct URL pattern observed from the DOM snapshot and test cases
+- Do NOT assert on elements that are always present in the DOM with toBeVisible() — instead assert on the specific content inside them
 
 CRITICAL OUTPUT FORMAT:
 - Return ONLY raw TypeScript code — absolutely no markdown fences, no explanation, no prose
 - The very first line of your response MUST be: import { test, expect } from '@playwright/test';
-- The second line MUST be: import { LoginPage } from './LoginPage';
-- When asserting on a string variable (e.g. const msg = await loginPage.getErrorMessage()), use expect(msg).toContain(...) WITHOUT await — string assertions are synchronous
+- The second line MUST be: import { {{PAGE_CLASS_NAME}} } from './{{PAGE_FILE_NAME}}';
 
 PageObject class:
 {{PAGE_OBJECT}}

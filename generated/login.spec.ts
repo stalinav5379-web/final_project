@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './LoginPage';
 
-const PASSWORD = process.env.SAUCE_PASSWORD ?? 'secret_sauce';
+const PASSWORD = process.env.APP_PASSWORD ?? 'secret_sauce';
 
 test.describe('Login', () => {
   test('[TC_01] Open SauceDemo login page', async ({ page }) => {

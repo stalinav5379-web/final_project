@@ -2,6 +2,7 @@ import * as https from 'https';
 import { execSync } from 'child_process';
 import type { AgentSkill } from '../orchestrator/AgentSkill';
 import type { AgentContext } from '../orchestrator/AgentContext';
+import { getPageName, getPageObjectFilePath, getSpecFilePath } from '../orchestrator/PageConfig';
 
 export class GitSkill implements AgentSkill {
   name(): string {
@@ -18,10 +19,11 @@ export class GitSkill implements AgentSkill {
     this.exec(`git checkout -B ${branch}`);
 
     console.log('  Staging generated files...');
-    this.exec('git add generated/LoginPage.ts generated/login.spec.ts');
+    this.exec(`git add ${getPageObjectFilePath()} ${getSpecFilePath()}`);
 
     console.log('  Committing...');
-    this.exec('git commit -m "feat: add AI-generated Playwright tests for login page"');
+    const pageName = getPageName();
+    this.exec(`git commit -m "feat: add AI-generated Playwright tests for ${pageName} page"`);
 
     console.log('  Pushing...');
     this.exec(`git push -u origin ${branch}`);
@@ -39,7 +41,7 @@ export class GitSkill implements AgentSkill {
     if (!repo) throw new Error('GITHUB_REPO is not set in .env (format: owner/repo)');
 
     const body = JSON.stringify({
-      title: `feat: AI-generated login tests [${date}]`,
+      title: `feat: AI-generated ${getPageName().toLowerCase()} tests [${date}]`,
       body: this.buildPrBody(ctx),
       head: branch,
       base: 'main',
@@ -151,8 +153,8 @@ export class GitSkill implements AgentSkill {
       'This PR was created automatically by the AI-Driven QA Pipeline.',
       '',
       '### Generated files',
-      '- `generated/LoginPage.ts` — Playwright Page Object',
-      '- `generated/login.spec.ts` — Login test scenarios',
+      `- \`${getPageObjectFilePath()}\` — Playwright Page Object`,
+      `- \`${getSpecFilePath()}\` — ${getPageName()} test scenarios`,
       '',
       '### AI Code Review',
       reviewSummary,

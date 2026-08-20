@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: process.env.APPLICATION_URL ?? 'https://www.saucedemo.com/',
-    testIdAttribute: 'data-test',
+    testIdAttribute: (process.env.TEST_ID_ATTRIBUTE as string | undefined) ?? 'data-testid',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     headless: true,

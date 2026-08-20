@@ -4,6 +4,7 @@ import type { AgentSkill } from '../orchestrator/AgentSkill';
 import type { AgentContext } from '../orchestrator/AgentContext';
 import { MistralClient } from '../orchestrator/MistralClient';
 import { PromptEngine } from '../orchestrator/PromptEngine';
+import { getPageObjectFileName, getPageObjectFilePath, getSpecFileName, getSpecFilePath } from '../orchestrator/PageConfig';
 
 const MAX_RETRIES = 3;
 
@@ -28,10 +29,15 @@ export class AiCodeFixSkill implements AgentSkill {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       console.log(`  Fix attempt ${attempt}/${MAX_RETRIES}...`);
 
+      const pageObjectFileName = getPageObjectFileName();
+      const specFileName = getSpecFileName();
+
       const prompt = this.engine.fill(path.resolve('prompts/05b_code_fix.txt'), {
         CODE_REVIEW: ctx.codeReview,
         PAGE_OBJECT: ctx.generatedPageObject,
         SPEC: ctx.generatedSpec,
+        PAGE_OBJECT_FILENAME: pageObjectFileName,
+        SPEC_FILENAME: specFileName,
       });
 
       const raw = await this.client.chat([{ role: 'user', content: prompt }], {
@@ -39,8 +45,8 @@ export class AiCodeFixSkill implements AgentSkill {
         maxTokens: 8192,
       });
 
-      const pageObject = this.extractBlock(raw, 'LoginPage.ts');
-      const spec = this.extractBlock(raw, 'login.spec.ts');
+      const pageObject = this.extractBlock(raw, pageObjectFileName);
+      const spec = this.extractBlock(raw, specFileName);
 
       const pomError = this.validate(pageObject, 'pageobject');
       const specError = this.validate(spec, 'spec');
@@ -50,13 +56,13 @@ export class AiCodeFixSkill implements AgentSkill {
         continue;
       }
 
-      fs.writeFileSync(path.resolve('generated/LoginPage.ts'), pageObject, 'utf-8');
-      fs.writeFileSync(path.resolve('generated/login.spec.ts'), spec, 'utf-8');
+      fs.writeFileSync(path.resolve(getPageObjectFilePath()), pageObject, 'utf-8');
+      fs.writeFileSync(path.resolve(getSpecFilePath()), spec, 'utf-8');
 
       ctx.generatedPageObject = pageObject;
       ctx.generatedSpec = spec;
 
-      console.log(`  Auto-fix applied — LoginPage.ts and login.spec.ts updated.`);
+      console.log(`  Auto-fix applied — ${pageObjectFileName} and ${specFileName} updated.`);
       return;
     }
 
