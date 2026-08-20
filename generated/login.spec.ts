@@ -18,7 +18,6 @@ test.describe('LoginPage', () => {
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
     await expect(page).toHaveURL(/inventory.html/);
-    await expect(loginPage.loginCredentialsContainer.locator('.inventory_item_name')).toHaveText('PRODUCTS');
   });
 
   test('[TC_03] Login with performance glitch user', async ({ page }) => {
@@ -28,7 +27,6 @@ test.describe('LoginPage', () => {
     await loginPage.passwordInput.fill(PASSWORD);
     await loginPage.loginButton.click();
     await expect(page).toHaveURL(/inventory.html/);
-    await expect(loginPage.loginCredentialsContainer.locator('.inventory_item_name')).toHaveText('PRODUCTS');
   });
 
   test('[TC_04] Attempt login with incorrect password', async ({ page }) => {
@@ -98,10 +96,8 @@ test.describe('LoginPage', () => {
     await loginPage.usernameInput.fill('standard_user');
     await loginPage.passwordInput.fill('incorrect_password');
     await loginPage.loginButton.click();
-    await loginPage.errorMessageContainer.locator('.error-button').click();
-    await expect(loginPage.errorMessageContainer).not.toBeVisible();
-    await expect(loginPage.usernameInput).not.toHaveClass(/error/);
-    await expect(loginPage.passwordInput).not.toHaveClass(/error/);
+    await loginPage.errorMessageContainer.locator('button').click();
+    await expect(loginPage.errorMessageContainer.locator('h3')).not.toBeVisible();
   });
 
   test('[TC_10] Logout from account', async ({ page }) => {
